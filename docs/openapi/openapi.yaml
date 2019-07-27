@@ -1,0 +1,95 @@
+openapi: 3.0.2
+info:
+  version: 1.0.0
+  title: Router Manager
+  description: This is a managing network service.
+  license:
+    name: MIT
+servers:
+  - url: http://pine64.router.io/v1
+    description: Router
+paths:
+  /wifi:
+    get:
+      summary: Status of wifi
+      description: Returns status of wifi.
+      operationId: statusWifi
+      responses:
+        '200':
+          description: status response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    post:
+      summary: Re-connect to wifi
+      responses:
+        '200':
+          $ref: '#/components/responses/OK'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /sys/poweroff:
+    post:
+      summary: System shutdown or reboot
+      requestBody:
+        description: shutdown / reboot.
+        content:
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/Power'
+      responses:
+        '200':
+          $ref: '#/components/responses/OK'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          title: Erorr Code
+          type: integer
+          format: int32
+          minimum: 100
+          maximum: 600
+        message:
+          title: Error message
+          type: string
+    Status:
+      type: object
+      required:
+        - device
+        - connected
+        - signal
+      properties:
+        device:
+          type: string
+          example: wlan0
+        connected:
+          type: boolean
+        signal:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 100
+    Power:
+      type: string
+      enum:
+        - shutdown
+        - reboot
+  responses:
+    OK:
+      description: OK
+    UnexpectedError:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
