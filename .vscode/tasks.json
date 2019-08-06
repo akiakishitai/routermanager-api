@@ -6,7 +6,7 @@
     "env": {
       "apiImage": "openapitools/openapi-generator-cli",
       "apiVolume": "${workspaceFolder}:/local:Z",
-      "apiDoc": "/local/docs/openapi/openapi.yaml",
+      "apiDoc": "/local/api/openapi.yaml",
       "apiGen": "go-server",
       "apiDest": "out"
     }
