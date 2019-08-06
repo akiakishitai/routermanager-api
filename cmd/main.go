@@ -20,7 +20,7 @@ import (
 	//
 	//    sw "github.com/myname/myrepo/go"
 	//
-	sw "github.com/akiakishitai/routermanager-api/out/go-server/go"
+	sw "github.com/akiakishitai/routermanager-api/internal"
 )
 
 func main() {
