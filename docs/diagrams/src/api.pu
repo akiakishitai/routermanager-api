@@ -1,0 +1,24 @@
+@startuml api-program
+
+(*) --> "Recieve HTTP Request"
+
+if "Request?" then
+  -->[GET] ===status===
+else
+  ->[PUT] if "Check?" then
+    -->[ok] ===status===
+  else
+    ->[NG] "Execute systemctl"
+  endif
+endif
+
+"Execute systemctl" --> ===status===
+
+===status=== --> "Get Status"
+"Get Status" --> "Create JSON"
+
+"Create JSON" --> "Response JSON"
+
+"Response JSON" -->(*)
+
+@enduml
