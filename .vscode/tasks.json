@@ -1,0 +1,62 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "options": {
+    "env": {
+      "apiImage": "openapitools/openapi-generator-cli",
+      "apiVolume": "${workspaceFolder}:/local:Z",
+      "apiDoc": "/local/docs/openapi/openapi.yaml",
+      "apiGen": "go-server",
+      "apiDest": "out"
+    }
+  },
+  "tasks": [
+    {
+      "label": "api-validate",
+      "type": "shell",
+      "command": "podman",
+      "args": [
+        "run",
+        "--rm",
+        "-v", "${apiVolume},ro",
+        "${apiImage}",
+        "validate",
+        "-i", "${apiDoc}",
+      ],
+    },
+    {
+      "label": "api-outputdir",
+      "type": "shell",
+      "command":[
+        "mkdir", "-p", "${workspaceFolder}/${apiDest}/${apiGen}"
+      ]
+    },
+    {
+      "label": "api-generate",
+      "type": "shell",
+      "command": "podman",
+      "args": [
+        "run",
+        "--rm",
+        "-v", "${apiVolume}",
+        "${apiImage}",
+        "generate",
+        "-i", "${apiDoc}",
+        "-g", "${apiGen}",
+        "-o", "/local/${apiDest}/${apiGen}"
+      ],
+      "dependsOn": [
+        "api-outputdir"
+      ]
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "echo",
+      "args": [
+        "${apiDest}/${apiGen}"
+      ]
+    }
+  ],
+}
