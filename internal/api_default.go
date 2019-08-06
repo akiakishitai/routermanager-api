@@ -19,18 +19,6 @@ func SysPoweroff(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// SysTimedateGet - The time date of this machine
-func SysTimedateGet(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-}
-
-// SysTimedateSync - Synchronize clock to NTP server on this machine
-func SysTimedateSync(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-}
-
 // WifiReconnect - Re-connect to wifi
 func WifiReconnect(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
