@@ -24,6 +24,9 @@
 
 # End of https://www.gitignore.io/api/go
 
+## Go Build
+/build/
+
 ### OpenAPI
 # OpenAPI JSON schema
 api/schema.json
