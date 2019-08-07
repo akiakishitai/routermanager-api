@@ -13,12 +13,6 @@ import (
 	"net/http"
 )
 
-// SysPoweroff - System shutdown or reboot
-func SysPoweroff(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-}
-
 // WifiReconnect - Re-connect to wifi
 func WifiReconnect(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
