@@ -21,14 +21,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
         default:
           $ref: '#/components/responses/UnexpectedError'
     post:
       summary: Re-connect to wifi
       operationId: wifiReconnect
       responses:
-        '200':
-          $ref: '#/components/responses/OK'
+        '204':
+          $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/UnexpectedError'
   /sys/poweroff:
@@ -42,8 +44,10 @@ paths:
             schema:
               $ref: '#/components/schemas/Power'
       responses:
-        '200':
-          $ref: '#/components/responses/OK'
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
         default:
           $ref: '#/components/responses/UnexpectedError'
   /sys/timedate:
@@ -64,8 +68,8 @@ paths:
       summary: Synchronize clock to NTP server on this machine
       operationId: sys-timedateSync
       responses:
-        '200':
-          $ref: '#/components/responses/OK'
+        '204':
+          $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/UnexpectedError'
 components:
@@ -118,9 +122,32 @@ components:
   responses:
     OK:
       description: OK
+    NoContent:
+      description: No Content
     UnexpectedError:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+          example:
+            code: 500
+            message: unexpected error
+    BadRequestError:
+      description: Bad Request error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: bad request error
+    NotFoundError:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 404
+            message: not found error
