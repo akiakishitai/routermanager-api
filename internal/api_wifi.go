@@ -11,35 +11,53 @@ import (
 	"os/exec"
 )
 
+var (
+	unexpectedError = Error {
+		Code: 500,
+		Message: "Unexpected error",
+	}
+
+	notfoundError = Error {
+		Code: 404,
+		Message: "Not found",
+	}
+)
+
 // WifiReconnect - Re-connect to wifi
 func WifiReconnect(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
 
 	cmd := exec.Command("systemctl", "restart", "network-manager.service")
 	err := cmd.Run()
 	if err != nil {
-		json.NewEncoder(w).Encode(UnexpectedError("Cannot restart network-manager service."))
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(unexpectedError)
+		log.Print("Cannot restart network-manager service.")
 		return
 	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // WifiStatus - Status of wifi
 func WifiStatus(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+
+	errFn := func(logMsg string, response Error) {
+		log.Print(logMsg)
+		w.WriteHeader(response.httpStatus())
+		json.NewEncoder(w).Encode(response)
+	}
 
 	cmd := exec.Command("nmcli", "-t", "-f", "device,type,state,connection", "dev", "status")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Print(err)
-		json.NewEncoder(w).Encode(UnexpectedError("Failed to stdout pipe."))
+		errFn(err.Error(), unexpectedError)
 		return
 	}
 	
 	if err := cmd.Start(); err != nil {
-		log.Print(err)
-		json.NewEncoder(w).Encode(UnexpectedError("Failed to get wifi status."))
+		errFn(err.Error(), unexpectedError)
 		return
 	}
 
@@ -49,8 +67,7 @@ func WifiStatus(w http.ResponseWriter, r *http.Request) {
 	cmd1 := exec.Command("grep", "wifi", "-")
 	stdin, err := cmd1.StdinPipe()
 	if err != nil {
-		log.Print(err)
-		json.NewEncoder(w).Encode(UnexpectedError("Failed to stdin pipe."))
+		errFn(err.Error(), unexpectedError)
 		return
 	}
 
@@ -61,7 +78,8 @@ func WifiStatus(w http.ResponseWriter, r *http.Request) {
 	
 	out, _ := cmd1.CombinedOutput()
 	if string(out) == "" {
-		json.NewEncoder(w).Encode(UnexpectedError("Not found wifi device."))
+		notfoundError.Message = "Not found a wifi device"
+		errFn(notfoundError.Message, notfoundError)
 		return
 	}
 
@@ -69,7 +87,7 @@ func WifiStatus(w http.ResponseWriter, r *http.Request) {
 	stat := Status{
 		Device: slice[0],
 		Connected: (slice[2] == "connected" || slice[2] == "接続済み"),
-		Signal: 23,
+		Signal: -1,
 	}
 
 	cmd = exec.Command("nmcli", "-t", "-f", "active,device,ssid,signal", "dev", "wifi")
@@ -88,23 +106,19 @@ func WifiStatus(w http.ResponseWriter, r *http.Request) {
 
 	out, _ = cmd.CombinedOutput()
 	if string(out) == "" {
-		json.NewEncoder(w).Encode(UnexpectedError("Not found active wifi"))
+		notfoundError.Message = "Not found an active wifi"
+		errFn(notfoundError.Message, notfoundError)
 		return
 	}
 
 	slice = strings.Split(string(out), ":")
 	signal, parseErr := strconv.ParseInt(strings.TrimRight(slice[3], "\n"), 10, 32)
 	if parseErr != nil {
-		json.NewEncoder(w).Encode(UnexpectedError(parseErr.Error()))
+		log.Print(parseErr)
 		return
 	}
 	stat.Signal = int32(signal)
-	json.NewEncoder(w).Encode(stat)
-}
 
-func UnexpectedError(msg string) Error {
-	return Error {
-		Code: 400,
-		Message: msg,
-	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(stat)
 }
