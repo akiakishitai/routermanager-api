@@ -51,12 +51,35 @@
       ]
     },
     {
+      "label": "run",
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "command": "go",
+      "args": [
+        "run", "cmd/main.go"
+      ]
+    },
+    {
+      "label": "build-arm",
+      "type": "shell",
+      "group": "build",
+      "command": [
+        "GOOS=linux", "GOARCH=arm64", 
+        "go", "build", 
+        "-o", "build/arm", 
+        "cmd/main.go"
+      ]
+    },
+    {
       "label": "test",
       "type": "shell",
       "command": "echo",
       "args": [
         "${apiDest}/${apiGen}"
       ]
-    }
+    },
   ],
 }
