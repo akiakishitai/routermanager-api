@@ -15,6 +15,13 @@ import (
 func WifiReconnect(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
+
+	cmd := exec.Command("systemctl", "restart", "network-manager.service")
+	err := cmd.Run()
+	if err != nil {
+		json.NewEncoder(w).Encode(UnexpectedError("Cannot restart network-manager service."))
+		return
+	}
 }
 
 // WifiStatus - Status of wifi
