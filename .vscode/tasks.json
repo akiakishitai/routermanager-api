@@ -8,7 +8,8 @@
       "apiVolume": "${workspaceFolder}:/local:Z",
       "apiDoc": "/local/api/openapi.yaml",
       "apiGen": "go-server",
-      "apiDest": "out"
+      "apiDest": "out",
+      "ansibleDir": "${workspaceFolder}/scripts/ansible",
     }
   },
   "tasks": [
@@ -69,8 +70,19 @@
       "command": [
         "GOOS=linux", "GOARCH=arm64", 
         "go", "build", 
-        "-o", "build/arm", 
+        "-o", "build/${workspaceFolderBasename}", 
         "cmd/main.go"
+      ]
+    },
+    {
+      "label": "ansible-run",
+      "type": "shell",
+      "command": "ansible-playbook",
+      "args": [
+        "--inventory=${ansibleDir}/hosts/staging",
+        "--vault-id=$HOME/.ansible/vault_password",
+        "${ansibleDir}/main.yaml",
+        "${input:ansibleRunOption}"
       ]
     },
     {
@@ -82,4 +94,13 @@
       ]
     },
   ],
+  "inputs": [
+    {
+      "type": "pickString",
+      "id": "ansibleRunOption",
+      "description": "Inputs ansible playbook options to run",
+      "options": ["--syntax-check", "--check", ""],
+      "default": "--check"
+    }
+  ]
 }
