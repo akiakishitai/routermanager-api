@@ -1,7 +1,7 @@
 _project: routermanager-api
 bin:
   name: "{{ _project }}"
-  path: /usr/local/"{{ _project }}"
+  path: "/usr/local/bin/{{ _project }}"
 firewall:
   zone: internal
   service: router-api
