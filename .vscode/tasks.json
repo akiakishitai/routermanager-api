@@ -69,7 +69,7 @@
       "command": [
         "GOOS=linux", "GOARCH=arm64", 
         "go", "build", 
-        "-o", "build/arm", 
+        "-o", "build/${workspaceFolderBasename}", 
         "cmd/main.go"
       ]
     },
