@@ -1,6 +1,11 @@
 ---
 - hosts: apiservers
   tasks:
+    - name: Add 'staff' system group
+      group:
+        name: staff
+        system: yes
+
     - name: Copy this routermanager-api binary to server
       copy:
         src: "../../build/{{ bin.name }}"
@@ -9,6 +14,7 @@
         group: staff
         mode: '0775'
       become: yes
+
     - name: Create a firewalld service for api port
       copy:
         src: "./files/{{ firewall.service }}.xml"
@@ -17,6 +23,7 @@
         group: root
         mode: '0644'
       become: yes
+
     - name: Add firewalld service for api
       firewalld:
         zone: "{{firewall.zone}}"
@@ -26,6 +33,7 @@
         state: enabled
       become: yes
       ignore_errors: "{{ ansible_check_mode }}"
+
     - name: Create a systemd service for routermanager-api
       template:
         src: "./templates/{{ bin.name }}.j2"
@@ -34,6 +42,7 @@
         group: root
         mode: '0644'
       become: yes
+
     - name: Enable and start systemd service
       systemd:
         name: "{{ systemd.service }}"
