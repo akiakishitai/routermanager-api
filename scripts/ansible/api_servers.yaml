@@ -24,6 +24,10 @@
         mode: '0644'
       become: yes
 
+    - name: Reload firewalld for check new service
+      shell: firewall-cmd --reload
+      become: yes
+
     - name: Add firewalld service for api
       firewalld:
         zone: "{{firewall.zone}}"
