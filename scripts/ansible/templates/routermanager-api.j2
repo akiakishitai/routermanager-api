@@ -1,0 +1,10 @@
+[Unit]
+Description=RouterManager-API server daemon
+After=network.target
+
+[Service]
+ExecStart={{ bin.path }}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

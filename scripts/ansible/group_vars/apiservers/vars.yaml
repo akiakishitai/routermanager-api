@@ -1,0 +1,9 @@
+_project: routermanager-api
+bin:
+  name: "{{ _project }}"
+  path: /usr/local/"{{ _project }}"
+firewall:
+  zone: internal
+  service: router-api
+systemd:
+  service: "{{ bin.name }}.service"

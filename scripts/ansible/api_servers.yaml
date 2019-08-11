@@ -1,0 +1,43 @@
+---
+- hosts: apiservers
+  tasks:
+    - name: Copy this routermanager-api binary to server
+      copy:
+        src: "../../build/{{ bin.name }}"
+        dest: "{{ bin.path }}"
+        owner: root
+        group: staff
+        mode: '0775'
+      become: yes
+    - name: Create a firewalld service for api port
+      copy:
+        src: "./files/{{ firewall.service }}.xml"
+        dest: "/etc/firewalld/services/{{ firewall.service }}.xml"
+        owner: root
+        group: root
+        mode: '0644'
+      become: yes
+    - name: Add firewalld service for api
+      firewalld:
+        zone: "{{firewall.zone}}"
+        service: "{{ firewall.service }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      become: yes
+      ignore_errors: "{{ ansible_check_mode }}"
+    - name: Create a systemd service for routermanager-api
+      template:
+        src: "./templates/{{ bin.name }}.j2"
+        dest: "/etc/systemd/system/{{ systemd.service }}"
+        owner: root
+        group: root
+        mode: '0644'
+      become: yes
+    - name: Enable and start systemd service
+      systemd:
+        name: "{{ systemd.service }}"
+        state: started
+        enabled: yes
+        daemon_reload: yes
+      become: yes
