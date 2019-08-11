@@ -5,6 +5,7 @@ After=network.target
 [Service]
 ExecStart={{ bin.path }}
 Restart=always
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target
