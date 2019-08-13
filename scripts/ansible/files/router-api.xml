@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>RouterManager-API</short>
+  <description>The API is hand-maid. Check wif status.</description>
+  <port protocol="tcp" port="55555"/>
+</service>
