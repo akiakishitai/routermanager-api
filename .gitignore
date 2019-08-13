@@ -33,3 +33,14 @@ api/schema.json
 
 # Generator codes from openapi.yaml
 /out/
+
+# Created by https://www.gitignore.io/api/ansible
+# Edit at https://www.gitignore.io/?templates=ansible
+
+### Ansible ###
+*.retry
+
+# End of https://www.gitignore.io/api/ansible
+
+# Vault files
+vault*.yaml
